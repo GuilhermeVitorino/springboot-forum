@@ -52,7 +52,7 @@ public class Answer {
 		this.id = id;
 	}
 
-	public String getMensagem() {
+	public String getMessage() {
 		return message;
 	}
 

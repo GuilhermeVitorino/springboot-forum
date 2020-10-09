@@ -1,5 +1,6 @@
 package br.com.springboot.forum.controller;
 
+import br.com.springboot.forum.controller.dto.DetailedThreadDTO;
 import br.com.springboot.forum.controller.dto.ThreadDTO;
 import br.com.springboot.forum.controller.form.ThreadForm;
 import br.com.springboot.forum.model.Thread;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.validation.Valid;
+import javax.websocket.server.PathParam;
 import java.net.URI;
 import java.util.List;
 
@@ -43,6 +45,12 @@ public class ThreadsController {
 
         URI uri = uriBuilder.path("/threads/{id}").buildAndExpand(thread.getId()).toUri();
         return ResponseEntity.created(uri).body(new ThreadDTO(thread));
+    }
+
+    @GetMapping("/{id}")
+    public DetailedThreadDTO detail(@PathVariable Long id) {
+        Thread thread = threadRepository.getOne(id);
+        return new DetailedThreadDTO(thread);
     }
 
 }
