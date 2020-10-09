@@ -20,7 +20,7 @@ public class ThreadDTO {
         this.creationDate = thread.getCreationDate();
     }
 
-    public static List<ThreadDTO> converter(List<Thread> threads) {
+    public static List<ThreadDTO> convert(List<Thread> threads) {
         return threads.stream().map(ThreadDTO::new).collect(Collectors.toList());
     }
 

@@ -1,24 +1,47 @@
 package br.com.springboot.forum.controller;
 
 import br.com.springboot.forum.controller.dto.ThreadDTO;
+import br.com.springboot.forum.controller.form.ThreadForm;
 import br.com.springboot.forum.model.Thread;
+import br.com.springboot.forum.repository.CourseRepository;
 import br.com.springboot.forum.repository.ThreadRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
+@RequestMapping("/threads")
 public class ThreadsController {
 
     @Autowired
     ThreadRepository threadRepository;
 
-    @RequestMapping("/threads")
-    public List<ThreadDTO> listThreads(){
-        List<Thread> threads = threadRepository.findAll();
-        return ThreadDTO.converter(threads);
+    @Autowired
+    CourseRepository courseRepository;
+
+    @GetMapping
+    public List<ThreadDTO> listThreads(String courseName){
+        if (courseName == null) {
+            List<Thread> threads = threadRepository.findAll();
+            return ThreadDTO.convert(threads);
+        } else {
+            //List<Thread> threads = threadRepository.findByCourseName(courseName);
+            List<Thread> threads = threadRepository.otherWayToFindByCourseName(courseName);
+            return ThreadDTO.convert(threads);
+        }
+    }
+
+    @PostMapping
+    public ResponseEntity<ThreadDTO> add(@RequestBody ThreadForm threadForm, UriComponentsBuilder uriBuilder) {
+        Thread thread = threadForm.convert(courseRepository);
+        threadRepository.save(thread);
+
+        URI uri = uriBuilder.path("/threads/{id}").buildAndExpand(thread.getId()).toUri();
+        return ResponseEntity.created(uri).body(new ThreadDTO(thread));
     }
 
 }
