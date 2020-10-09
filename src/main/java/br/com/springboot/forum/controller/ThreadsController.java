@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
@@ -36,7 +37,7 @@ public class ThreadsController {
     }
 
     @PostMapping
-    public ResponseEntity<ThreadDTO> add(@RequestBody ThreadForm threadForm, UriComponentsBuilder uriBuilder) {
+    public ResponseEntity<ThreadDTO> add(@RequestBody @Valid ThreadForm threadForm, UriComponentsBuilder uriBuilder) {
         Thread thread = threadForm.convert(courseRepository);
         threadRepository.save(thread);
 
