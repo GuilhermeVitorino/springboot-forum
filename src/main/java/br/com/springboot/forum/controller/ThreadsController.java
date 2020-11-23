@@ -3,6 +3,7 @@ package br.com.springboot.forum.controller;
 import br.com.springboot.forum.controller.dto.DetailedThreadDTO;
 import br.com.springboot.forum.controller.dto.ThreadDTO;
 import br.com.springboot.forum.controller.form.ThreadForm;
+import br.com.springboot.forum.controller.form.UpdateThreadForm;
 import br.com.springboot.forum.model.Thread;
 import br.com.springboot.forum.repository.CourseRepository;
 import br.com.springboot.forum.repository.ThreadRepository;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import javax.transaction.Transactional;
 import javax.validation.Valid;
 import javax.websocket.server.PathParam;
 import java.net.URI;
@@ -51,6 +53,13 @@ public class ThreadsController {
     public DetailedThreadDTO detail(@PathVariable Long id) {
         Thread thread = threadRepository.getOne(id);
         return new DetailedThreadDTO(thread);
+    }
+
+    @PutMapping("/{id}")
+    @Transactional
+    public ResponseEntity<ThreadDTO> update(@PathVariable Long id, @RequestBody @Valid UpdateThreadForm form) {
+        Thread thread = form.update(id, threadRepository);
+        return ResponseEntity.ok(new ThreadDTO(thread));
     }
 
 }
