@@ -17,6 +17,7 @@ import javax.validation.Valid;
 import javax.websocket.server.PathParam;
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/threads")
@@ -51,23 +52,43 @@ public class ThreadsController {
     }
 
     @GetMapping("/{id}")
-    public DetailedThreadDTO detail(@PathVariable Long id) {
-        Thread thread = threadRepository.getOne(id);
-        return new DetailedThreadDTO(thread);
+    public ResponseEntity<DetailedThreadDTO> detail(@PathVariable Long id) {
+
+        Optional<Thread> thread = threadRepository.findById(id);
+
+        if (thread.isPresent()) {
+            return ResponseEntity.ok(new DetailedThreadDTO(thread.get()));
+        }
+
+        return ResponseEntity.notFound().build();
     }
 
     @PutMapping("/{id}")
     @Transactional
     public ResponseEntity<ThreadDTO> update(@PathVariable Long id, @RequestBody @Valid UpdateThreadForm form) {
-        Thread thread = form.update(id, threadRepository);
-        return ResponseEntity.ok(new ThreadDTO(thread));
+
+        Optional<Thread> optionalThread = threadRepository.findById(id);
+
+        if (optionalThread.isPresent()) {
+            Thread thread = form.update(id, threadRepository);
+            return ResponseEntity.ok(new ThreadDTO(thread));
+        }
+
+        return ResponseEntity.notFound().build();
     }
 
     @DeleteMapping("/{id}")
     @Transactional
     public ResponseEntity<?> delete(@PathVariable Long id) {
-        threadRepository.deleteById(id);
-        return ResponseEntity.ok().build();
+
+        Optional<Thread> thread = threadRepository.findById(id);
+
+        if (thread.isPresent()) {
+            threadRepository.deleteById(id);
+            return ResponseEntity.ok().build();
+        }
+
+        return ResponseEntity.notFound().build();
     }
 
 }
