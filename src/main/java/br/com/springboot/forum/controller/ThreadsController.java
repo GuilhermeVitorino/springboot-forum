@@ -41,6 +41,7 @@ public class ThreadsController {
     }
 
     @PostMapping
+    @Transactional
     public ResponseEntity<ThreadDTO> add(@RequestBody @Valid ThreadForm threadForm, UriComponentsBuilder uriBuilder) {
         Thread thread = threadForm.convert(courseRepository);
         threadRepository.save(thread);
@@ -60,6 +61,13 @@ public class ThreadsController {
     public ResponseEntity<ThreadDTO> update(@PathVariable Long id, @RequestBody @Valid UpdateThreadForm form) {
         Thread thread = form.update(id, threadRepository);
         return ResponseEntity.ok(new ThreadDTO(thread));
+    }
+
+    @DeleteMapping("/{id}")
+    @Transactional
+    public ResponseEntity<?> delete(@PathVariable Long id) {
+        threadRepository.deleteById(id);
+        return ResponseEntity.ok().build();
     }
 
 }
